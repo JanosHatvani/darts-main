@@ -1,6 +1,6 @@
 let statsChart = null;
 
-// ===== STATISZTIKA GOMB =====
+//STATISZTIKA GOMB
 document.getElementById("showStats").addEventListener("click", () => {
   const statsModal = document.getElementById("statsModal");
   statsModal.style.display = "block";
@@ -8,7 +8,7 @@ document.getElementById("showStats").addEventListener("click", () => {
   renderStats(players);
 });
 
-// ===== MODAL BEZÁRÁS =====
+//MODAL BEZÁRÁS
 document.querySelector(".close").onclick = () => {
   document.getElementById("statsModal").style.display = "none";
 };
@@ -18,7 +18,7 @@ window.onclick = (event) => {
   if (event.target === modal) modal.style.display = "none";
 };
 
-// ===== STATISZTIKA KIRAJZOLÁS =====
+//STATISZTIKA KIRAJZOLÁS
 function renderStats(players) {
   const statsText = document.getElementById("modalStatsContent");
   const canvas = document.getElementById("statsChart");
@@ -26,14 +26,14 @@ function renderStats(players) {
 
   statsText.innerHTML = "";
 
-  // 🔹 X tengely (fix sorrend)
+  // X tengely (fix sorrend)
   const labels = [];
   for (let i = 1; i <= 20; i++) labels.push("S" + i);
   for (let i = 1; i <= 20; i++) labels.push("D" + i);
   for (let i = 1; i <= 20; i++) labels.push("T" + i);
   labels.push("SB", "DB");
 
-  // 🔹 PLAYER CARDS CONTAINER
+  // PLAYER CARDS CONTAINER
   const gridContainer = document.createElement("div");
   gridContainer.style.display = "grid";
   gridContainer.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))"; 
@@ -41,7 +41,7 @@ function renderStats(players) {
   gridContainer.style.marginBottom = "20px";
   statsText.appendChild(gridContainer);
 
-  // 🔹 Játékosonkénti stat szöveg + dataset
+  //játékosonkénti stat szöveg + dataset
   const datasets = players.map(player => {
     // player card
     const div = document.createElement("div");
@@ -70,10 +70,10 @@ function renderStats(players) {
     };
   });
 
-  // 🔹 előző chart törlése
+  // előző chart törlése
   if (statsChart) statsChart.destroy();
 
-  // 🔹 Chart.js oszlopdiagram
+  // Chart.js oszlopdiagram
   statsChart = new Chart(ctx, {
     type: "bar",
     data: {
@@ -133,7 +133,7 @@ function renderStats(players) {
 }
 
 
-// ===== SEGÉD: VÉLETLEN SZÍN =====
+//Helper!VÉLETLEN SZÍN 
 function randomColor() {
   const r = Math.floor(Math.random() * 200 + 30);
   const g = Math.floor(Math.random() * 200 + 30);

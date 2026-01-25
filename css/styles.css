@@ -10,7 +10,6 @@ body {
   overflow-y: auto;
 }
 
-
 /* ===== SIDEBAR ===== */
 #sidebar {
   width: 250px;
@@ -94,7 +93,7 @@ body {
 
 .gameContainer {
   position: relative;
-  display: flex;          /* 🔥 HIÁNYZOTT */
+  display: flex;          
   gap: 20px;
   align-items: flex-start;
 }
@@ -168,7 +167,7 @@ canvas {
   top: 10px;
   right: 10px;
   display: flex;
-  flex-direction: column;   /* 🔑 EGYMÁS ALATT */
+  flex-direction: column;   
   gap: 8px;
 
   z-index: 10;
@@ -213,7 +212,7 @@ canvas {
 #statsChart {
   width: 100% !important;
   max-width: 1200px;
-  height: 600px !important;   /* magasabb */
+  height: 600px !important;   
   background: #303030;
   border-radius: 12px;
   margin-top: 20px;

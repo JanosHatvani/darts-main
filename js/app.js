@@ -170,7 +170,7 @@ function drawBoard() {
     ctx.fillText(number, x, y);
   }
 
-  // --- Bull ---
+  //Bull
   circle(25, "green"); // szimpla 25
   circle(12, "red");   // dupla 50
 
@@ -319,7 +319,7 @@ function isDoubleCheckoutPossible(score) {
 function addThrow(label, score, x, y) {
     let player = players[currentPlayerIndex];
 
-    // ⚡ kör eleji score mentése
+    //kör eleji score mentése
     if(player.throws.length % 3 === 0) {
         player.roundStartScore = player.score;
     }
@@ -514,7 +514,7 @@ function resetGame() {
     currentRound = 1;
 
     players.forEach(p => {
-        p.score = startingScore; // ⚡ itt már a kiválasztott kezdőpont
+        p.score = startingScore; //itt már a kiválasztott kezdőpont
         p.throws = [];
         p.rounds = [];
         p.stats = {};
@@ -578,14 +578,14 @@ DOUBLES.push({ label:"DB", value:50 });
 function calculateCheckout(score){
   if(score > 170 || score < 2) return null;
 
-  // 1️⃣ próbálkozás: 1 dobás (pl. DB, D20)
+  // 1️ próbálkozás: 1 dobás (pl. DB, D20)
   for(const d of DOUBLES){
     if(d.value === score){
       return [d.label];
     }
   }
 
-  // 2️⃣ próbálkozás: 2 dobás
+  // 2️ próbálkozás: 2 dobás
   for(const d of DOUBLES){
     const rest = score - d.value;
     if(rest <= 0) continue;
@@ -597,7 +597,7 @@ function calculateCheckout(score){
     }
   }
 
-  // 3️⃣ próbálkozás: 3 dobás
+  // 3️ próbálkozás: 3 dobás
   for(const d of DOUBLES){
     const rest1 = score - d.value;
     if(rest1 <= 0) continue;
@@ -640,14 +640,13 @@ function updateCheckoutPanel(){
     return;
   }
 
-  // VAN KISZÁLLÓ → PANEL LÁTSZIK
+  //VAN KISZÁLLÓ → PANEL LÁTSZIK
   panel.style.display = "block";
 
   content.innerHTML = result
     .map(t => `<span>${t}</span>`)
     .join("");
 }
-
 
 
 // Bezárás
