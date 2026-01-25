@@ -1,0 +1,384 @@
+/* ===== ALAP ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #1e1e2f;
+  color: white;
+  display: flex;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  width: 250px;
+  background: #2b2b45;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+}
+
+#sidebar h2 {
+  margin: 0;
+  color: #00ff99;
+  text-align: center;
+}
+
+#sidebar button {
+  cursor: pointer;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #444466;
+  color: white;
+  transition: 0.2s;
+}
+
+#sidebar button:hover {
+  background: #00ff99;
+  color: #000;
+}
+
+/* ===== MAIN ===== */
+#main {
+  flex: 1;
+  padding: 25px;
+  overflow-x: hidden;
+  overflow-y: visible; 
+}
+
+/* ===== PANEL ===== */
+.panel {
+  background: #2a2a40;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* ===== BUTTONS ===== */
+.primaryBtn {
+  background: #00ff99;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primaryBtn:hover {
+  background: #00cc7a;
+}
+
+.secondaryBtn {
+  background: #444466;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.secondaryBtn:hover {
+  background: #00ff99;
+  color: #000;
+}
+
+.gameContainer {
+  position: relative;
+  display: flex;          /* 🔥 HIÁNYZOTT */
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.tablePanel {
+  width: 420px;
+  min-width: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.controlPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+/* ===== DARTBOARD CANVAS ===== */
+#board {
+  width: 400px;
+  height: 400px;
+  background: #000;
+  border-radius: 50%;
+}
+
+
+/* NEM globális canvas! */
+canvas {
+  display: block;
+}
+
+/* ===== THROW BUTTON GRID ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.grid button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #444466;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.grid button:hover {
+  background: #00ff99;
+  color: #000;
+}
+
+/* ===== THROW LIST ===== */
+.throw {
+  color: #00ff99;
+  font-size: 14px;
+}
+
+/* ===== GAME PANEL BUTTON POSITION ===== */
+#gamePanel {
+  position: relative;
+}
+
+.gameActions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;   /* 🔑 EGYMÁS ALATT */
+  gap: 8px;
+
+  z-index: 10;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #2a2a40;
+  margin: 2% auto;
+  padding: 20px;
+  border-radius: 18px;
+  width: 85%;
+  max-width: 1200px;
+  color: white;
+}
+
+.modal .close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.modal .close:hover {
+  color: #ff5555;
+}
+
+/* ===== STAT TEXT ===== */
+#modalStatsContent h4 {
+  margin: 10px 0 5px;
+  color: #00ff99;
+}
+
+/* ===== STAT CHART ===== */
+#statsChart {
+  width: 100% !important;
+  max-width: 1200px;
+  height: 600px !important;   /* magasabb */
+  background: #303030;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+#roundsContainer {
+  flex: 1;
+  overflow-y: auto;
+  background: #1e1e2f;
+  border-radius: 8px;
+  padding: 10px;
+}
+.roundBlock {
+  margin-bottom: 15px;
+}
+
+.roundBlock h5 {
+  margin: 5px 0;
+  color: #00ff99;
+}
+
+.roundTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.roundTable th,
+.roundTable td {
+  border: 1px solid #444466;
+  padding: 6px;
+  text-align: center;
+}
+
+.roundTable th {
+  background: #2b2b45;
+}
+
+.roundTable td {
+  background: #1e1e2f;
+}
+#checkoutPanel {
+  position: absolute;
+  left: 135px;
+  top: 420px;
+  width: auto;
+  padding: 10px;
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 999;
+}
+
+#checkoutPanel h4 {
+  margin: 0 0 8px 0;
+  text-align: center;
+  font-size: 15px;
+}
+
+#checkoutContent span {
+  display: inline-block;
+  background: #222;
+  padding: 4px 6px;
+  margin: 3px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+/* ===== START PANEL FORM ===== */
+#startPanel {
+  background: #2a2a40;
+  padding: 30px 25px;
+  border-radius: 15px;
+  width: 350px;
+  margin: 50px auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+#startPanel h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #00ff99;
+  font-weight: 600;
+}
+
+/* Form group alap */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Input mezők */
+#startPanel input[type="number"],
+#startPanel input[type="text"],
+#startPanel select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #444466;
+  background: #1e1e2f;
+  color: white;
+  font-size: 14px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  transition: 0.2s;
+}
+
+#startPanel input[type="number"]:focus,
+#startPanel input[type="text"]:focus,
+#startPanel select:focus {
+  outline: none;
+  border-color: #00ff99;
+  box-shadow: 0 0 5px #00ff99;
+}
+
+/* Checkbox */
+#startPanel input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* Select */
+#startPanel select {
+  appearance: none; /* natív nyíl eltüntetés */
+  background: #1e1e2f url("data:image/svg+xml,%3Csvg fill='white' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E") no-repeat right 10px center;
+  background-size: 12px;
+  cursor: pointer;
+  margin-top: 15px
+}
+
+/* Start button */
+#startGame.primaryBtn {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  transition: 0.3s;
+}
+
+#startGame.primaryBtn:hover {
+  background: #00cc7a;
+  color: #000;
+}
+
+/* Player inputok */
+#playerNames input {
+  width: 93%;
+  padding: 10px 12px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #444466;
+  background: #1e1e2f;
+  color: white;
+  font-size: 14px;
+}
+
+#playerNames input:focus {
+  outline: none;
+  border-color: #00ff99;
+  box-shadow: 0 0 5px #00ff99;
+}
+div#playerNames {
+    margin-bottom: 10px;
+}

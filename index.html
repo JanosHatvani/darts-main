@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darts Dashboard</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- OLDALSÓ MENÜ -->
+<div id="sidebar">
+  <h2>Darts</h2>
+  <button id="showStats">Statisztikák</button>
+  <button id="backToStart">Kezdőfelület</button>
+</div>
+
+<!-- FŐ PANEL -->
+<div id="main">
+  <!-- KEZDŐFELÜLET -->
+  <div id="startPanel" class="panel">
+    <h2>Darts játék indítása</h2>
+
+    <div class="form-group">
+      <label>Játékosok száma: 
+        <input type="number" id="playerCount" min="1" max="6" value="1">
+      </label>
+    </div>
+
+    <div id="playerNames"></div>
+
+    <div class="form-group">
+      <label>
+        Véletlenszerű kezdés:
+        <input type="checkbox" id="randomStart">
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        Kiszálló:
+        <select id="checkoutMode">
+          <option value="single">Szimpla</option>
+          <option value="double">Dupla</option>
+        </select>
+      </label>
+    </div>
+
+    <button id="startGame" class="primaryBtn">Játék indítása</button>
+  </div>
+
+  <!-- JÁTÉKFELÜLET -->
+    <div id="gamePanel" class="panel" style="display:none;">
+      <div class="gameContainer">
+
+        <!-- BAL: DARTS TÁBLA -->
+        <div class="tablePanel">
+          <canvas id="board" width="500" height="500"></canvas>
+        </div>
+
+        <!-- JOBB: GOMBOK + DOBÁSOK -->
+        <div class="controlPanel">
+          <h3>Játékos: <span id="currentPlayer"></span></h3>
+          <h4>Pontszám: <span id="currentScore">501</span></h4>
+
+          <div class="grid" id="buttons"></div>
+
+          <h4>Körök:</h4>
+          <div id="roundsContainer"></div>
+        </div>
+
+        <div id="checkoutPanel" style="display:none">
+          <h4>Checkout ajánló</h4>
+            <div id="checkoutContent">–</div>
+        </div>
+
+      </div>
+
+
+
+      <div class="gameActions">
+        <button id="undoBtn" class="secondaryBtn">↩ Visszavonás</button>
+        <button id="newGameBtn" class="secondaryBtn">Új játék</button>
+      </div>
+    </div>
+
+      <!-- STATISZTIKA PANEL -->
+
+      <div id="statsModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3>Statisztika</h3>
+          <div id="modalStatsContent"></div>
+          <canvas id="statsChart" width="800" height="400"></canvas>
+        </div>
+      </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/app.js"></script>
+<script src="js/stat.js"></script>
+
+</body>
+</html>
