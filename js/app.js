@@ -88,23 +88,36 @@ const gamePanel=document.getElementById("gamePanel");
 const startGameBtn=document.getElementById("startGame");
 const statsContent=document.getElementById("statsContent");
 
-startGameBtn.addEventListener("click",()=>{
-  players=[];
-  const count=parseInt(playerCountInput.value);
-  for(let i=0;i<count;i++){
-    const name=document.getElementById("playerName"+i).value || ("Player"+(i+1));
-    players.push(new Player(name));
-  }
-  checkoutMode=document.getElementById("checkoutMode").value;
-  currentPlayerIndex=document.getElementById("randomStart").checked ? Math.floor(Math.random()*players.length) : 0;
-  startPanel.style.display="none";
-  gamePanel.style.display="block";
+let startingScore = 501; // alapértelmezett
+
+startGameBtn.addEventListener("click", () => {
+    players = [];
+    const count = parseInt(playerCountInput.value);
+
+    startingScore = parseInt(document.getElementById("startingScore").value); // ⚡ itt tároljuk
+
+    for (let i = 0; i < count; i++) {
+        const name = document.getElementById("playerName" + i).value || ("Player" + (i+1));
+        const p = new Player(name);
+        p.score = startingScore;  // kezdőpont
+        players.push(p);
+    }
+
+  checkoutMode = document.getElementById("checkoutMode").value;
+  currentPlayerIndex = document.getElementById("randomStart").checked
+    ? Math.floor(Math.random() * players.length)
+    : 0;
+
+  startPanel.style.display = "none";
+  gamePanel.style.display = "block";
+
   initButtons();
   drawBoard();
   updateUI();
-  renderRounds(); 
+  renderRounds();
   updateCheckoutPanel();
 });
+
 
 //ui update sccore+player
 function updateUI(){
@@ -496,39 +509,30 @@ document.getElementById("newGameBtn").addEventListener("click", () => {
 });
 
 function resetGame() {
-  // Heatmap és körök törlése
-  heatmap = [];
-  rounds = [];
-  currentRound = 1;
+    heatmap = [];
+    rounds = [];
+    currentRound = 1;
 
-  // Játékosok visszaállítása 501-re és dobások törlése
-  players.forEach(p => {
-    p.score = 501;
-    p.throws = [];
-    p.rounds = [];
-    p.stats = {};
-  });
+    players.forEach(p => {
+        p.score = startingScore; // ⚡ itt már a kiválasztott kezdőpont
+        p.throws = [];
+        p.rounds = [];
+        p.stats = {};
+    });
 
-  // Első játékos kezd
-  currentPlayerIndex = 0;
+    currentPlayerIndex = 0;
 
-  // UI frissítése
-  if(players.length > 0){
-    document.getElementById("currentPlayer").textContent = players[0].name;
-    document.getElementById("currentScore").textContent = players[0].score;
-  } else {
-    document.getElementById("currentPlayer").textContent = "-";
-    document.getElementById("currentScore").textContent = "-";
-  }
+    if(players.length > 0){
+        document.getElementById("currentPlayer").textContent = players[0].name;
+        document.getElementById("currentScore").textContent = players[0].score;
+    } else {
+        document.getElementById("currentPlayer").textContent = "-";
+        document.getElementById("currentScore").textContent = "-";
+    }
 
-  // Checkout panel frissítése
-  updateCheckoutPanel();
-
-  // Dobások megjelenítésének frissítése
-  document.getElementById("roundsContainer").innerHTML = "";
-
-  // Tábla újrarajzolása
-  drawBoard();
+    updateCheckoutPanel();
+    document.getElementById("roundsContainer").innerHTML = "";
+    drawBoard();
 }
 
 

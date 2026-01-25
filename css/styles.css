@@ -382,3 +382,21 @@ canvas {
 div#playerNames {
     margin-bottom: 10px;
 }
+#startingScore {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #444466;
+  background: #1e1e2f;
+  color: white;
+  font-size: 14px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  transition: 0.2s;
+}
+
+#startingScore:focus {
+  outline: none;
+  border-color: #00ff99;
+  box-shadow: 0 0 5px #00ff99;
+}
