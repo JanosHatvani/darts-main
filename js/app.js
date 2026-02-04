@@ -27,7 +27,7 @@ class Player {
     this.stats[label]++;
   }
 
-    getAverage(){
+  getAverage(){
     if (this.throws.length === 0) return "0.00";
 
     let rounds = [];
@@ -267,27 +267,48 @@ canvas.addEventListener("click", e => {
 //Gombok
 const btns = document.getElementById("buttons");
 
+
 function initButtons() {
   btns.innerHTML = "";
+ 
   for (let n = 0; n <= 20; n++) {
-    // Ha 0, csak S
     const types = n === 0 ? ["S"] : ["S", "D", "T"];
+
     types.forEach(m => {
-      const b = document.createElement("button");
-      b.textContent = m + n;
-      b.onclick = () => addThrow(m + n, n * (m === "D" ? 2 : m === "T" ? 3 : 1), center, center);
-      btns.appendChild(b);
+      const btn = document.createElement("button");
+      btn.textContent = m + n;
+
+      btn.onclick = () => {
+        
+        const label = m + n;
+        const score =
+          n * (m === "D" ? 2 : m === "T" ? 3 : 1);
+
+        const pos = getPositionFromLabel(label);
+ 
+        addThrow(label, score, pos.x, pos.y);
+      };
+
+      btns.appendChild(btn);
     });
   }
 
-  // SB és DB gombok
-  ["SB", "DB"].forEach(b => {
+  // SB / DB
+  ["SB", "DB"].forEach(label => {
     const btn = document.createElement("button");
-    btn.textContent = b;
-    btn.onclick = () => addThrow(b, b === "DB" ? 50 : 25, center, center);
+    btn.textContent = label;
+
+    btn.onclick = () => {
+      const score = label === "DB" ? 50 : 25;
+      const pos = getPositionFromLabel(label);
+
+      addThrow(label, score, pos.x, pos.y);
+    };
+
     btns.appendChild(btn);
   });
 }
+
 
 function isDoubleCheckoutPossible(score) {
     if(score === 0) return true;
@@ -322,7 +343,6 @@ function addThrow(label, score, x, y) {
 
     player.lastScore = player.score;
 
-    //kör eleji score mentése
     if(player.throws.length % 3 === 0) {
         player.roundStartScore = player.score;
     }
@@ -331,7 +351,7 @@ function addThrow(label, score, x, y) {
 
     player.addThrow(label, score);
 
-    // Bust ellenőrzés: negatív pont
+    // Bust ellenőrzés
     if(player.score < 0){
         player.score = prevScore;
         player.throws.pop();
@@ -343,18 +363,14 @@ function addThrow(label, score, x, y) {
         return;
     }
 
-// csak akkor ellenőrzünk, ha dupla kiszálló mód van ÉS score ≤ 170
+    // Dupla checkout ellenőrzés
     if(checkoutMode === "double" && player.score <= 170){
         if(!isDoubleCheckoutPossible(player.score)){
-            // visszaállítjuk a kör eleji score-t
             player.score = player.roundStartScore;
-
-            // az adott kör dobásait töröljük
             for(let i = 0; i < player.throws.length % 3; i++){
                 player.throws.pop();
                 heatmap.pop();
             }
-
             alert(player.name + " a kör dobásaival nem lehet dupla kiszállót dobni! Dobások érvénytelenek.");
             drawBoard();
             updateUI();
@@ -364,8 +380,12 @@ function addThrow(label, score, x, y) {
         }
     }
 
+    // Hozzáadjuk a heatmaphez
     heatmap.push({ x, y, label, score });
+
+    // 🟢 Itt hívjuk a blur-t minden dobásnál
     drawBoard();
+    drawHeatmapBlur(); // ← ide kell
     updateUI();
     renderRounds();
 
@@ -378,6 +398,7 @@ function addThrow(label, score, x, y) {
             player.throws.pop();
             heatmap.pop();
             drawBoard();
+            drawHeatmapBlur();
             updateUI();
             nextPlayer();
         } else {
@@ -709,5 +730,64 @@ function renderPlayersHeader() {
 function isCheckoutReady(player) {
   if (checkoutMode !== "double") return false;
   return player.score <= 170 && player.score > 1;
+}
+
+function getPositionFromLabel(label) {
+  if (label === "DB") return { x: center, y: center }; // marad középen
+
+  if (label === "SB") {
+      // 25-ös szimpla bull: körülötte egy kis sugarú kör
+      const rMin = 12; // dupla bull sugara
+      const rMax = 25; // szimpla bull külső sugara
+      const pos = randomInRing(rMin, rMax); // random pozíció a gyűrűn belül
+      return pos;
+  }
+  const type = label[0];
+  const value = parseInt(label.slice(1), 10);
+  const index = numbers.indexOf(value);
+  if (index === -1) return { x: center, y: center };
+
+  const sectorSize = 2 * Math.PI / 20;
+  const offset = -Math.PI / 2; // 20 felül
+
+  // Szektor közép
+  const angle = index * sectorSize + sectorSize / 20 + offset;
+
+  // Gyűrű középső sugara
+  let r;
+  switch(type) {
+    case 'D': r = 180; break; // dupla
+    case 'T': r = 110; break; // tripla
+    case 'S': r = 62; break;  // szimpla
+    default: r = 80;
+  }
+
+  return {
+    x: center + Math.cos(angle) * r,
+    y: center + Math.sin(angle) * r
+  };
+}
+
+
+function randomInRing(rMin, rMax) {
+  const angle = Math.random() * 2 * Math.PI;
+  const r = rMin + Math.random() * (rMax - rMin);
+
+  return {
+    x: center + Math.cos(angle) * r,
+    y: center + Math.sin(angle) * r
+  };
+}
+
+function addThrowWithBlur(label, score, basePos, samples = 8, spread = 6) {
+  for (let i = 0; i < samples; i++) {
+    const angle = Math.random() * 2 * Math.PI;
+    const r = Math.random() * spread;
+
+    const x = basePos.x + Math.cos(angle) * r;
+    const y = basePos.y + Math.sin(angle) * r;
+
+    addThrow(label, score, x, y, i > 0);
+  }
 }
 
