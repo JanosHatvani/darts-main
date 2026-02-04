@@ -399,3 +399,55 @@ div#playerNames {
   border-color: #00ff99;
   box-shadow: 0 0 5px #00ff99;
 }
+
+.playersList {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.playerName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  color: #777;
+  transition: 0.2s;
+}
+
+.playerScore {
+  font-size: 13px;
+  font-weight: bold;
+  color: #aaa;
+  transition: 0.2s;
+}
+
+/* checkout képes (<=170) */
+.playerScore.checkout {
+  color: #ffd966;
+}
+
+/* veszély zóna (<=100) */
+.playerScore.danger {
+  color: #ff6666;
+}
+
+/* aktív játékos glow */
+.playerName.active {
+  color: white;
+  text-shadow: 0 0 8px rgba(0,255,153,0.7);
+}
+
+/* pontváltozás nyilak */
+.scoreChange {
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.scoreDown {
+  color: #00ff99;
+}
+
+.scoreUp {
+  color: #ff5555;
+}

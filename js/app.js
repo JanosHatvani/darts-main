@@ -13,10 +13,11 @@ const numbers = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
 
 class Player {
   constructor(name){
-    this.name=name;
-    this.score=501;
-    this.throws=[];
-    this.stats={};
+    this.name = name;
+    this.score = 501;
+    this.lastScore = 501;   // ⬅️ ÚJ
+    this.throws = [];
+    this.stats = {};
   }
 
   addThrow(label,score){
@@ -120,10 +121,10 @@ startGameBtn.addEventListener("click", () => {
 
 
 //ui update sccore+player
-function updateUI(){
-  const player=players[currentPlayerIndex];
-  document.getElementById("currentPlayer").textContent=player.name;
-  document.getElementById("currentScore").textContent=player.score;
+function updateUI() {
+  document.getElementById("currentScore").textContent =
+    players[currentPlayerIndex].score;
+  renderPlayersHeader();
   updateCheckoutPanel();
 }
 
@@ -319,6 +320,8 @@ function isDoubleCheckoutPossible(score) {
 function addThrow(label, score, x, y) {
     let player = players[currentPlayerIndex];
 
+    player.lastScore = player.score;
+
     //kör eleji score mentése
     if(player.throws.length % 3 === 0) {
         player.roundStartScore = player.score;
@@ -461,7 +464,7 @@ function renderRounds(){
     ...players.map(p => p.getRounds().length)
   );
 
-  for(let r = 0; r < maxRounds; r++){
+  for(let r = maxRounds - 1; r >= 0; r--){
     const roundDiv = document.createElement("div");
     roundDiv.className = "roundBlock";
 
@@ -652,4 +655,59 @@ function updateCheckoutPanel(){
 // Bezárás
 closeModal.onclick = () => { statsModal.style.display = "none"; };
 window.onclick = (event) => { if(event.target == statsModal) statsModal.style.display = "none"; };
+
+function renderPlayersHeader() {
+  const header = document.getElementById("playersHeader");
+  header.innerHTML = "Játékosok: ";
+
+  const list = document.createElement("div");
+  list.className = "playersList";
+
+  players.forEach((p, i) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "playerName";
+    if (i === currentPlayerIndex) wrapper.classList.add("active");
+
+    // név
+    const name = document.createElement("span");
+    name.textContent = p.name;
+
+    // pontszám
+    const score = document.createElement("span");
+    score.className = "playerScore";
+    score.textContent = p.score;
+
+    // állapot színezés
+    if (p.score <= 100) score.classList.add("danger");
+    else if (isCheckoutReady(p)) score.classList.add("checkout");
+
+    // pontváltozás nyíl
+    if (p.lastScore !== undefined && p.lastScore !== p.score) {
+      const diff = p.score - p.lastScore;
+      const arrow = document.createElement("span");
+      arrow.className = "scoreChange";
+
+      if (diff < 0) {
+        arrow.textContent = " ↓";
+        arrow.classList.add("scoreDown");
+      } else {
+        arrow.textContent = " ↑";
+        arrow.classList.add("scoreUp");
+      }
+      score.appendChild(arrow);
+    }
+
+    wrapper.appendChild(name);
+    wrapper.appendChild(score);
+    list.appendChild(wrapper);
+  });
+
+  header.appendChild(list);
+}
+
+
+function isCheckoutReady(player) {
+  if (checkoutMode !== "double") return false;
+  return player.score <= 170 && player.score > 1;
+}
 
