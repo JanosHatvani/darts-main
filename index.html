@@ -13,6 +13,7 @@
   <h2>Darts</h2>
   <button id="showStats">Statisztikák</button>
   <button id="backToStart">Kezdőfelület</button>
+  <button id="rulesofdarts">Szabályok</button>
 </div>
 
 <!-- FŐ PANEL -->
@@ -112,6 +113,33 @@
           <canvas id="statsChart" width="800" height="400"></canvas>
         </div>
       </div>
+
+    <!-- RULES MODAL -->
+    <div id="rulesModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        
+        <article id="rulesarticle">
+          <h2>A tábla</h2>
+          <p>
+            Az óratábla vált a darts szabvány céltáblájává, melyet 1-től 20-ig terjedő pontértékű szektorokra bont egy drótháló. A szektorok külső részén található gyűrű a duplázó gyűrű, a belső pedig a triplázó gyűrű, illetve a tábla közepét bullnak nevezzük, melyet szintén két részre tudunk osztani: bull, ami zöld színű és 25 pontot ér, valamint a közepe a bull's eye – bika szeme –, amely dupla, 50 pontot ér.
+          </p>
+
+          <h2>A dobótér</h2>
+          <p>
+            A céltáblát úgy kell felhelyezni, hogy a bull középpontja 1,73 méterre legyen a talajtól. A dobásnál mindkét lábnak a dobóvonal mögött kell lennie, ami 237 cm-re helyezkedik el a tábla síkjától. Az eldobott nyilat nem lehet újra dobni, még akkor sem, ha nem érte el a táblát.
+            <img src="img/darts.jpg" alt="Darts tábla">
+          </p>
+
+          <h2>Játék menete</h2>
+          <p>
+            A játékos/játékosok az előre beállított pontszámmal kezdik el a játékot, a dobott pontszámok levonásra kerülnek az aktuális eredményből. Az a nyertes, aki előbb éri el a nulla pontot. A nulla pont elérésének kiírástól függően több lehetősége is lehet: szimpla kiszállós, dupla kiszállós és ún. mester kiszállós szabályok léteznek.
+            Szimpla kiszálló esetén a táblán elérhető bármilyen pontértékkel elért 0 pont győzelmet jelent. A dupla kiszállós játékban a győzelmet csak a dupla szektoron elért pontokkal lehet elnyerni. A mester kiszálló azt jelenti, hogy tripla és dupla szektoron megdobott pontokkal kell elérni a nulla értéket. Ha a játékos több pontot dob, mint a kör előtti pontszáma, abban az esetben negatív pontszáma lenne, ilyenkor a pontok nem kerülnek levonásra, így a következő körben ugyanonnan kezdi. A játékot addig játsszák, amíg valamelyik játékos el nem éri a 0 pontot.
+          </p>
+        </article>
+      </div>
+    </div>
+
 
 </div>
 

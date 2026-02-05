@@ -602,3 +602,57 @@ div#playerNames {
   opacity: 0.4;
   filter: grayscale(1);
 }
+/* ===== RULES PANEL ===== */
+
+#rulesModal {
+  display: none; /* alapból rejtve */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+}
+
+#rulesModal .modal-content {
+  background: #2a2a40;
+  margin: 2% auto;
+  padding: 25px;
+  border-radius: 18px;
+  width: 85%;
+  max-width: 1200px;
+  color: white;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#rulesModal .modal-content h2 {
+  color: #00ff99;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+#rulesModal .modal-content p {
+  line-height: 1.6;
+  margin-bottom: 15px;
+  text-align: justify;
+  font-size: 12px;
+}
+
+#rulesModal .modal-content img {
+  display: block;
+  margin: 10px auto;
+  border-radius: 10px;
+  width: 400px;
+  height: auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+#rulesModal .close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+#rulesModal .close:hover {
+  color: #ff5555;
+}
+

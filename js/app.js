@@ -89,6 +89,7 @@ class Player {
 //kezdőfelület
 const startPanel=document.getElementById("startPanel");
 const gamePanel=document.getElementById("gamePanel");
+const rulesofdarts = document.getElementById("rulesofdarts");
 
 const startGameBtn=document.getElementById("startGame");
 const statsContent=document.getElementById("statsContent");
@@ -838,3 +839,24 @@ function addThrowWithBlur(label, score, basePos, samples = 8, spread = 6) {
   }
 }
 
+// Szabályok modal
+const rulesBtn = document.getElementById("rulesofdarts");
+const rulesModal = document.getElementById("rulesModal");
+const rulesClose = rulesModal.querySelector(".close");
+
+// Megnyitás
+rulesBtn.addEventListener("click", () => {
+  rulesModal.style.display = "block";
+});
+
+// Bezárás a × gombra
+rulesClose.addEventListener("click", () => {
+  rulesModal.style.display = "none";
+});
+
+// Bezárás ha a háttérre kattintanak
+window.addEventListener("click", (e) => {
+  if (e.target === rulesModal) {
+    rulesModal.style.display = "none";
+  }
+});
