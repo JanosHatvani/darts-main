@@ -533,20 +533,7 @@ document.getElementById("undoBtn").addEventListener("click", () => {
     updateUI();
     renderRounds();
 });
-document.getElementById("showStats").addEventListener("click", () => {
-  const statsModal = document.getElementById("statsModal");
-  statsModal.style.display = "block";
 
-  const canvas = document.getElementById("statsChart");
-  const ctx = canvas.getContext("2d");
-  
-  // canvas tisztítása
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // teszt: rajzolj egy piros oszlopot
-  ctx.fillStyle = "red";
-  ctx.fillRect(50, 50, 50, 200);
-});
 
 function renderRounds(){
   const container = document.getElementById("roundsContainer");

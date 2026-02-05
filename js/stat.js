@@ -2,11 +2,36 @@ let statsChart = null;
 
 //STATISZTIKA GOMB
 document.getElementById("showStats").addEventListener("click", () => {
+  if (!players || players.length === 0) {
+    alert("Nincsenek dobások a statisztikához!");
+    return;
+  }
+
+  // Labels feltöltése
+  const labels = [];
+  for (let i = 0; i <= 20; i++) labels.push("S" + i);
+  for (let i = 1; i <= 20; i++) labels.push("D" + i);
+  for (let i = 1; i <= 20; i++) labels.push("T" + i);
+  labels.push("SB", "DB");
+
+  // Ellenőrzés, hogy van-e bármilyen statisztikai adat
+  const hasData = players.some(player => {
+    const stats = player.getThrowStats();
+    return labels.some(label => stats[label] > 0);
+  });
+
+  if (!hasData) {
+    alert("Nincsenek dobások a statisztikához!");
+    return; // modal **nem nyílik meg**
+  }
+
+  // Csak ha van adat, nyitjuk a modalt
   const statsModal = document.getElementById("statsModal");
   statsModal.style.display = "block";
 
   renderStats(players);
 });
+
 
 //MODAL BEZÁRÁS
 document.querySelector(".close").onclick = () => {
@@ -22,16 +47,21 @@ window.onclick = (event) => {
 function renderStats(players) {
   const statsText = document.getElementById("modalStatsContent");
   const canvas = document.getElementById("statsChart");
+  const statsModal = document.getElementById("statsModal");
   const ctx = canvas.getContext("2d");
 
   statsText.innerHTML = "";
 
   // X tengely (fix sorrend)
   const labels = [];
+ 
+
   for (let i = 0; i <= 20; i++) labels.push("S" + i);
   for (let i = 1; i <= 20; i++) labels.push("D" + i);
   for (let i = 1; i <= 20; i++) labels.push("T" + i);
+
   labels.push("SB", "DB");
+  
 
   // PLAYER CARDS CONTAINER
   const gridContainer = document.createElement("div");
@@ -46,13 +76,8 @@ function renderStats(players) {
     // player card
     const div = document.createElement("div");
     div.className = "playerCard";
-    div.style.background = "#2a2a40";
-    div.style.padding = "12px";
-    div.style.borderRadius = "12px";
-    div.style.color = "#00ff99";
-    div.style.fontSize = "16px";
     div.innerHTML = `
-      <h4 style="margin:0 0 8px 0; font-size:18px; color:#00ff99;">${player.name}</h4>
+      <h4 style="margin:0 0 8px 0; font-size:18px;">${player.name}</h4>
       Átlag: <b>${player.getAverage()}</b> |
       Duplák: <b>${player.getDoubleCount()}</b> |
       Triplák: <b>${player.getTripleCount()}</b>
@@ -131,7 +156,6 @@ function renderStats(players) {
     }
   });
 }
-
 
 //Helper!VÉLETLEN SZÍN 
 function randomColor() {

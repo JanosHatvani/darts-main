@@ -182,6 +182,12 @@ canvas {
 }
 
 /* ===== MODAL ===== */
+
+#statsModal {
+  display: none; /* alapból ne látszódjon */
+  /* a többi modal styling */
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -212,7 +218,14 @@ canvas {
 
 /* ===== STAT TEXT / PLAYER CARDS ===== */
 #modalStatsContent {
-  padding: 15px;
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 12px;
+  background: #2a2a40;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 #modalStatsContent h4 {
@@ -224,19 +237,14 @@ canvas {
 
 /* PLAYER CARD */
 .playerCard {
-  background: linear-gradient(135deg, #2a2a40, #1f1f35);
-  padding: 14px 16px;
   border-radius: 12px;
-  color: #00ff99;
   font-size: 15px;
-  box-shadow: 0 4px 12px rgba(0, 255, 153, 0.2);
+  padding: 10px 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  background: #1e1e2f;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.playerCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 255, 153, 0.35);
-}
 
 /* PLAYER GRID CONTAINER */
 #modalStatsContent > div:first-child {
@@ -254,11 +262,10 @@ canvas {
   width: 100% !important;
   max-width: 1400px;
   height: 500px !important;
-  background: #30303a;
+
   border-radius: 14px;
   margin-top: 20px;
   padding: 10px;
-  box-shadow: 0 4px 15px rgba(0, 255, 153, 0.2);
 }
 
 /* ===== ROUNDS TABLE ===== */
@@ -508,14 +515,7 @@ div#playerNames {
   flex-wrap: wrap;
 }
 
-.playerName {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-weight: bold;
-  color: #777;
-  transition: 0.2s;
-}
+
 
 .playerScore {
   font-size: 13px;
@@ -538,20 +538,6 @@ div#playerNames {
 .playerName.active {
   color: white;
   text-shadow: 0 0 8px rgba(0,255,153,0.7);
-}
-
-/* pontváltozás nyilak */
-.scoreChange {
-  font-size: 11px;
-  margin-left: 4px;
-}
-
-.scoreDown {
-  color: #00ff99;
-}
-
-.scoreUp {
-  color: #ff5555;
 }
 
 /* ===== PLAYER LIST PANEL ===== */
