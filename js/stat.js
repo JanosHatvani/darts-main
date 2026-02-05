@@ -28,7 +28,7 @@ function renderStats(players) {
 
   // X tengely (fix sorrend)
   const labels = [];
-  for (let i = 1; i <= 20; i++) labels.push("S" + i);
+  for (let i = 0; i <= 20; i++) labels.push("S" + i);
   for (let i = 1; i <= 20; i++) labels.push("D" + i);
   for (let i = 1; i <= 20; i++) labels.push("T" + i);
   labels.push("SB", "DB");
@@ -65,7 +65,7 @@ function renderStats(players) {
       label: player.name,
       data: labels.map(l => stats[l] || 0),
       backgroundColor: randomColor(),
-      barPercentage: 1,
+      barPercentage: 2,
       categoryPercentage: 1
     };
   });

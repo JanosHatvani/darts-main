@@ -15,10 +15,14 @@ class Player {
   constructor(name){
     this.name = name;
     this.score = 501;
-    this.lastScore = 501;   // ⬅️ ÚJ
+    this.lastScore = 501;  
     this.throws = [];
     this.stats = {};
+    this.finished = false; //alepértelmezett állapot player
+    this.roundStartScore = this.score; // kör eleji pontszám
   }
+
+  
 
   addThrow(label,score){
     this.throws.push({label,score});
@@ -95,7 +99,7 @@ startGameBtn.addEventListener("click", () => {
     players = [];
     const count = parseInt(playerCountInput.value);
 
-    startingScore = parseInt(document.getElementById("startingScore").value); // ⚡ itt tároljuk
+    startingScore = parseInt(document.getElementById("startingScore").value); 
 
     for (let i = 0; i < count; i++) {
         const name = document.getElementById("playerName" + i).value || ("Player" + (i+1));
@@ -130,12 +134,34 @@ function updateUI() {
 
 
 //következő játékosra ugrás
-function nextPlayer(){
-  currentPlayerIndex=(currentPlayerIndex+1)%players.length;
+function nextPlayer() {
+  let tries = 0;
+
+  do {
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    tries++;
+  } while (
+    players[currentPlayerIndex].finished &&
+    tries < players.length
+  );
+
+  heatmap = [];
   updateCheckoutPanel();
   updateUI();
-  heatmap = [];  
 }
+
+
+function nextActivePlayer() {
+  let tries = 0;
+  do {
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    tries++;
+  } while (players[currentPlayerIndex].score === 0 && tries < players.length);
+
+  updateUI();
+  updateCheckoutPanel();
+}
+
 
 //tábla rajzolása
 function drawBoard() {
@@ -341,74 +367,107 @@ function isDoubleCheckoutPossible(score) {
 function addThrow(label, score, x, y) {
     let player = players[currentPlayerIndex];
 
-    player.lastScore = player.score;
+    // Mentjük az aktuális pontszámot a visszaállításhoz (Bust)
+    const prevScore = player.score;
 
-    if(player.throws.length % 3 === 0) {
+    // ==========================
+    // Kör elején beállítjuk a roundStartScore-t
+    if (player.throws.length % 3 === 0) {
         player.roundStartScore = player.score;
     }
 
-    const prevScore = player.score;
-
+    // Hozzáadjuk a dobást
     player.addThrow(label, score);
 
-    // Bust ellenőrzés
-    if(player.score < 0){
-        player.score = prevScore;
-        player.throws.pop();
-        alert(player.name + " túllépte a pontját! Dobás érvénytelen.");
+    // ==========================
+    // Túllépés / Bust ellenőrzés
+    if (player.score < 0) {
+        // visszaállítjuk a kör eleji pontot
+        player.score = player.roundStartScore;
+
+        // az aktuális kör dobásait töröljük
+        const throwsToRemove = player.throws.length % 3 === 0 ? 0 : player.throws.length % 3;
+        for (let i = 0; i < throwsToRemove; i++) {
+            player.throws.pop();
+            heatmap.pop();
+        }
+
         drawBoard();
         updateUI();
+        alert(player.name + " túllépte a kör eleji pontját! Dobások érvénytelenek.");
+
         nextPlayer();
         updateCheckoutPanel();
         return;
     }
 
-    // Dupla checkout ellenőrzés
-    if(checkoutMode === "double" && player.score <= 170){
-        if(!isDoubleCheckoutPossible(player.score)){
+    // ==========================
+    // Dupla kiszálló ellenőrzés (ha szükséges)
+    if (checkoutMode === "double" && player.score === 0) {
+        if (!label.startsWith("D") && label !== "DB") {
+            // nem dupla kiszálló, érvénytelen
             player.score = player.roundStartScore;
-            for(let i = 0; i < player.throws.length % 3; i++){
-                player.throws.pop();
-                heatmap.pop();
-            }
-            alert(player.name + " a kör dobásaival nem lehet dupla kiszállót dobni! Dobások érvénytelenek.");
+            player.throws.pop();
+            heatmap.pop();
+
             drawBoard();
             updateUI();
+            alert(player.name + " dupla kiszállóval kell kiszállnod!");
+
             nextPlayer();
             updateCheckoutPanel();
             return;
         }
     }
 
+    // ==========================
     // Hozzáadjuk a heatmaphez
     heatmap.push({ x, y, label, score });
 
-    // 🟢 Itt hívjuk a blur-t minden dobásnál
+    // Frissítések
     drawBoard();
-    drawHeatmapBlur(); // ← ide kell
+    drawHeatmapBlur();
     updateUI();
     renderRounds();
 
-    if(player.throws.length % 3 === 0) nextPlayer();
+    // Következő játékos, ha vége a körnek (3 dobás)
+    if (player.throws.length % 3 === 0) {
+        nextPlayer();
+    }
 
-    if(player.score === 0){
-        if(checkoutMode === "double" && !label.startsWith("D") && label !== "DB"){
-            alert(player.name + " dupla kiszállóval kell kiszállnod!");
-            player.score += score;
-            player.throws.pop();
-            heatmap.pop();
-            drawBoard();
-            drawHeatmapBlur();
-            updateUI();
-            nextPlayer();
-        } else {
+    // ==========================
+    // Játékos kiszállt
+    if (player.score === 0) {
+        player.finished = true;
+
+        if (players.length === 1) {
             alert(player.name + " nyert!");
+            return;
         }
+
+        const continueGame = confirm(`${player.name} kiszállt.\nSzeretnétek folytatni a játékot?`);
+        if (continueGame) {
+            alert(player.name + " kiszállt, a játék folytatódik!");
+            nextPlayer();
+
+            if (players.every(p => p.finished)) {
+                alert("Minden játékos kiszállt! Játék vége.");
+                resetGame();
+            }
+            return;
+        }
+
+        const startNew = confirm("Új játék kezdés indulhat?");
+        if (startNew) resetGame();
+        return;
     }
 }
 
+
 const playerCountInput = document.getElementById("playerCount");
 const playerNamesDiv = document.getElementById("playerNames");
+const playerPlus = document.getElementById("playerPlus");
+const playerMinus = document.getElementById("playerMinus");
 
 function generatePlayerInputs() {
   playerNamesDiv.innerHTML = "";
@@ -423,12 +482,25 @@ function generatePlayerInputs() {
   }
 }
 
+function setPlayerCount(value) {
+  const v = Math.max(1, Math.min(6, value));
+  playerCountInput.value = v;
+  generatePlayerInputs();
+}
+
+playerPlus.addEventListener("click", () => {
+  setPlayerCount(parseInt(playerCountInput.value) + 1);
+});
+
+playerMinus.addEventListener("click", () => {
+  setPlayerCount(parseInt(playerCountInput.value) - 1);
+});
+
 // alapértelmezett generálás
 generatePlayerInputs();
 
 // változás esetén frissítés
 playerCountInput.addEventListener("change", generatePlayerInputs);
-
 
 //Menu
 document.getElementById("backToStart").addEventListener("click",()=>{
@@ -438,7 +510,6 @@ document.getElementById("backToStart").addEventListener("click",()=>{
   players=[];
   throwsDiv.innerHTML="";
 });
-
 
 document.getElementById("undoBtn").addEventListener("click", () => {
     const player = players[currentPlayerIndex];
@@ -534,31 +605,26 @@ document.getElementById("newGameBtn").addEventListener("click", () => {
 
 function resetGame() {
     heatmap = [];
-    rounds = [];
-    currentRound = 1;
 
     players.forEach(p => {
-        p.score = startingScore; //itt már a kiválasztott kezdőpont
+        p.score = startingScore;
+        p.lastScore = startingScore;
         p.throws = [];
-        p.rounds = [];
         p.stats = {};
+        p.finished = false;
     });
 
     currentPlayerIndex = 0;
 
-    if(players.length > 0){
-        document.getElementById("currentPlayer").textContent = players[0].name;
-        document.getElementById("currentScore").textContent = players[0].score;
-    } else {
-        document.getElementById("currentPlayer").textContent = "-";
-        document.getElementById("currentScore").textContent = "-";
-    }
+    document.getElementById("currentScore").textContent =
+        players.length ? players[0].score : "-";
 
-    updateCheckoutPanel();
     document.getElementById("roundsContainer").innerHTML = "";
-    drawBoard();
-}
 
+    drawBoard();
+    updateUI();
+    updateCheckoutPanel();
+}
 
 const statsModal = document.getElementById("statsModal");
 const closeModal = statsModal.querySelector(".close");
@@ -679,7 +745,7 @@ window.onclick = (event) => { if(event.target == statsModal) statsModal.style.di
 
 function renderPlayersHeader() {
   const header = document.getElementById("playersHeader");
-  header.innerHTML = "Játékosok: ";
+  header.innerHTML = "";
 
   const list = document.createElement("div");
   list.className = "playersList";
@@ -688,6 +754,7 @@ function renderPlayersHeader() {
     const wrapper = document.createElement("div");
     wrapper.className = "playerName";
     if (i === currentPlayerIndex) wrapper.classList.add("active");
+    if (p.finished) wrapper.classList.add("finished");
 
     // név
     const name = document.createElement("span");
@@ -699,7 +766,7 @@ function renderPlayersHeader() {
     score.textContent = p.score;
 
     // állapot színezés
-    if (p.score <= 100) score.classList.add("danger");
+    if (p.score <= 170) score.classList.add("danger");
     else if (isCheckoutReady(p)) score.classList.add("checkout");
 
     // pontváltozás nyíl
@@ -708,13 +775,6 @@ function renderPlayersHeader() {
       const arrow = document.createElement("span");
       arrow.className = "scoreChange";
 
-      if (diff < 0) {
-        arrow.textContent = " ↓";
-        arrow.classList.add("scoreDown");
-      } else {
-        arrow.textContent = " ↑";
-        arrow.classList.add("scoreUp");
-      }
       score.appendChild(arrow);
     }
 

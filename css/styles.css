@@ -162,15 +162,23 @@ canvas {
   position: relative;
 }
 
-.gameActions {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.gameTopArea {
   display: flex;
-  flex-direction: column;   
-  gap: 8px;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+}
 
-  z-index: 10;
+/* gombok: egymás mellett */
+.gameActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* playerlista alatta */
+#playersHeader {
+  width: 100%;
 }
 
 /* ===== MODAL ===== */
@@ -202,49 +210,90 @@ canvas {
   color: #ff5555;
 }
 
-/* ===== STAT TEXT ===== */
+/* ===== STAT TEXT / PLAYER CARDS ===== */
+#modalStatsContent {
+  padding: 15px;
+}
+
 #modalStatsContent h4 {
-  margin: 10px 0 5px;
+  margin: 8px 0 6px;
   color: #00ff99;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* PLAYER CARD */
+.playerCard {
+  background: linear-gradient(135deg, #2a2a40, #1f1f35);
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: #00ff99;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(0, 255, 153, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.playerCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 153, 0.35);
+}
+
+/* PLAYER GRID CONTAINER */
+#modalStatsContent > div:first-child {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+  max-height: 250px; /* scroll, ha sok játékos van */
+  overflow-y: auto;
+  padding-right: 5px; /* scroll miatt */
 }
 
 /* ===== STAT CHART ===== */
 #statsChart {
   width: 100% !important;
-  max-width: 1200px;
-  height: 600px !important;   
-  background: #303030;
-  border-radius: 12px;
+  max-width: 1400px;
+  height: 500px !important;
+  background: #30303a;
+  border-radius: 14px;
   margin-top: 20px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 255, 153, 0.2);
 }
 
+/* ===== ROUNDS TABLE ===== */
 #roundsContainer {
   flex: 1;
   overflow-y: auto;
   background: #1e1e2f;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 15px;
 }
+
 .roundBlock {
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 .roundBlock h5 {
-  margin: 5px 0;
+  margin: 6px 0 8px;
   color: #00ff99;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .roundTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .roundTable th,
 .roundTable td {
   border: 1px solid #444466;
-  padding: 6px;
+  padding: 7px;
   text-align: center;
+  transition: background 0.2s;
 }
 
 .roundTable th {
@@ -254,6 +303,29 @@ canvas {
 .roundTable td {
   background: #1e1e2f;
 }
+
+.roundTable tr:hover td {
+  background: #2c2c50;
+}
+
+/* SCROLLBAR DESIGN (modern) */
+#modalStatsContent > div:first-child::-webkit-scrollbar,
+#roundsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+#modalStatsContent > div:first-child::-webkit-scrollbar-thumb,
+#roundsContainer::-webkit-scrollbar-thumb {
+  background: #00ff99;
+  border-radius: 4px;
+}
+
+#modalStatsContent > div:first-child::-webkit-scrollbar-track,
+#roundsContainer::-webkit-scrollbar-track {
+  background: #1e1e2f;
+}
+
+
 #checkoutPanel {
   position: absolute;
   left: 135px;
@@ -303,6 +375,36 @@ canvas {
 /* Form group alap */
 .form-group {
   margin-bottom: 15px;
+}
+
+.playerCountControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.playerCountControl button {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
+  background: #444466;
+  color: white;
+  cursor: pointer;
+}
+
+.playerCountControl button:hover {
+  background: #00ff99;
+  color: #000;
+}
+
+#playerCount {
+  width: 60px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* Input mezők */
@@ -450,4 +552,67 @@ div#playerNames {
 
 .scoreUp {
   color: #ff5555;
+}
+
+/* ===== PLAYER LIST PANEL ===== */
+
+/* grid konténer */
+.playersList {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 12px;
+  background: #2a2a40;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* egy játékos kártya */
+.playerName {
+  background: #1e1e2f;
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: bold;
+  color: #aaa;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+/* aktív játékos */
+.playerName.active {
+  color: white;
+  background: linear-gradient(135deg, #00ff99, #00cc7a);
+  box-shadow: 0 0 12px rgba(0,255,153,0.7);
+}
+
+/* játékos név */
+.playerName span:first-child {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* pontszám */
+.playerScore {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ddd;
+}
+
+/* checkout kész */
+.playerScore.checkout {
+  color: #ffd966;
+}
+
+/* danger */
+.playerScore.danger {
+  color: #ff6666;
+}
+
+/* finished játékos  */
+.playerName.finished {
+  opacity: 0.4;
+  filter: grayscale(1);
 }

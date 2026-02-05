@@ -21,11 +21,14 @@
   <div id="startPanel" class="panel">
     <h2>Darts játék indítása</h2>
 
-    <div class="form-group">
-      <label>Játékosok száma: 
-        <input type="number" id="playerCount" min="1" max="6" value="1">
-      </label>
+  <div class="form-group">
+    <label>Játékosok száma:</label>
+    <div class="playerCountControl">
+      <button type="button" id="playerMinus">−</button>
+      <input type="text" id="playerCount" value="1" readonly>
+      <button type="button" id="playerPlus">+</button>
     </div>
+  </div>
 
     <div id="playerNames"></div>
 
@@ -60,6 +63,18 @@
 
   <!-- JÁTÉKFELÜLET -->
     <div id="gamePanel" class="panel" style="display:none;">
+
+      <div class="gameTopArea">
+
+        <div class="gameActions">
+          <button id="undoBtn" class="secondaryBtn">↩ Visszavonás</button>
+          <button id="newGameBtn" class="secondaryBtn">Új játék</button>
+        </div>
+
+        <div id="playersHeader"></div>
+
+      </div>
+
       <div class="gameContainer">
 
         <!-- BAL: DARTS TÁBLA -->
@@ -69,8 +84,8 @@
 
         <!-- JOBB: GOMBOK + DOBÁSOK -->
         <div class="controlPanel">
-          <h3 id="playersHeader"></h3>
-          <h4>Pontszám: <span id="currentScore">501</span></h4>
+
+          <h4>Pontszám: <span id="currentScore"></span></h4>
 
           <div class="grid" id="buttons"></div>
 
@@ -85,10 +100,6 @@
 
       </div>
 
-      <div class="gameActions">
-        <button id="undoBtn" class="secondaryBtn">↩ Visszavonás</button>
-        <button id="newGameBtn" class="secondaryBtn">Új játék</button>
-      </div>
     </div>
 
       <!-- STATISZTIKA PANEL -->
