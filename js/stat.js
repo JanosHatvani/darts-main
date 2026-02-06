@@ -68,7 +68,6 @@ function renderStats(players) {
   gridContainer.style.display = "grid";
   gridContainer.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))"; 
   gridContainer.style.gap = "15px";
-  gridContainer.style.marginBottom = "20px";
   statsText.appendChild(gridContainer);
 
   //játékosonkénti stat szöveg + dataset

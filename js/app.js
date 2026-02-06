@@ -7,6 +7,7 @@ let players = [];
 let currentPlayerIndex = 0;
 let checkoutMode = "single";
 let heatmap = [];
+let throwHistory = [];
 
 
 const numbers = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
@@ -368,6 +369,17 @@ function isDoubleCheckoutPossible(score) {
 function addThrow(label, score, x, y) {
     let player = players[currentPlayerIndex];
 
+        const snapshot = {
+        playerIndex: currentPlayerIndex,
+        label,
+        score,
+        x,
+        y,
+        prevScore: player.score,
+        roundStartScore: player.roundStartScore
+    };
+
+
     // Mentjük az aktuális pontszámot a visszaállításhoz (Bust)
     const prevScore = player.score;
 
@@ -424,6 +436,9 @@ function addThrow(label, score, x, y) {
     // ==========================
     // Hozzáadjuk a heatmaphez
     heatmap.push({ x, y, label, score });
+
+    // Hozzáadjuk a dobástörténethez 
+    throwHistory.push(snapshot);
 
     // Frissítések
     drawBoard();
@@ -513,26 +528,45 @@ document.getElementById("backToStart").addEventListener("click",()=>{
 });
 
 document.getElementById("undoBtn").addEventListener("click", () => {
-    const player = players[currentPlayerIndex];
-    if(player.throws.length === 0) return; // nincs mit visszavonni
+  if (throwHistory.length === 0) return;
 
-    // Utolsó dobás eltávolítása
-    const lastThrow = player.throws.pop();
+  const last = throwHistory.pop();
+  const player = players[last.playerIndex];
 
-    // Pont visszaállítása
-    player.score += lastThrow.score;
+  // aktív játékos visszaállítása
+  currentPlayerIndex = last.playerIndex;
 
-    // Heatmapből is töröljük az utolsó pontot
-    for(let i = heatmap.length - 1; i >= 0; i--){
-        if(heatmap[i].label === lastThrow.label){
-            heatmap.splice(i, 1);
-            break; // csak az utolsót töröljük
-        }
+  // score visszaállítása
+  player.score = last.prevScore;
+
+  // dobás törlése a playerből
+  for (let i = player.throws.length - 1; i >= 0; i--) {
+    if (
+      player.throws[i].label === last.label &&
+      player.throws[i].score === last.score
+    ) {
+      player.throws.splice(i, 1);
+      break;
     }
+  }
 
-    drawBoard();
-    updateUI();
-    renderRounds();
+  // heatmap visszavonás
+  for (let i = heatmap.length - 1; i >= 0; i--) {
+    if (
+      heatmap[i].x === last.x &&
+      heatmap[i].y === last.y
+    ) {
+      heatmap.splice(i, 1);
+      break;
+    }
+  }
+
+  player.finished = false;
+
+  drawBoard();
+  updateUI();
+  renderRounds();
+  updateCheckoutPanel();
 });
 
 
@@ -612,6 +646,7 @@ function resetGame() {
     drawBoard();
     updateUI();
     updateCheckoutPanel();
+    throwHistory = [];
 }
 
 const statsModal = document.getElementById("statsModal");

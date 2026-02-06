@@ -240,7 +240,7 @@ canvas {
   border-radius: 12px;
   font-size: 15px;
   padding: 10px 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+
   background: #1e1e2f;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -251,7 +251,7 @@ canvas {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
-  margin-bottom: 25px;
+  
   max-height: 250px; /* scroll, ha sok játékos van */
   overflow-y: auto;
   padding-right: 5px; /* scroll miatt */
