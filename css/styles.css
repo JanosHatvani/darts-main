@@ -515,15 +515,6 @@ div#playerNames {
   flex-wrap: wrap;
 }
 
-
-
-.playerScore {
-  font-size: 13px;
-  font-weight: bold;
-  color: #aaa;
-  transition: 0.2s;
-}
-
 /* checkout képes (<=170) */
 .playerScore.checkout {
   color: #ffd966;
@@ -558,8 +549,13 @@ div#playerNames {
 .playerName {
   background: #1e1e2f;
   border-radius: 10px;
-  padding: 10px 8px;
   text-align: center;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  column-gap: 16px;
+  height: 72px;
+  padding: 0 16px;
   font-weight: bold;
   color: #aaa;
   transition: all 0.25s ease;
@@ -576,31 +572,12 @@ div#playerNames {
 /* játékos név */
 .playerName span:first-child {
   display: block;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
-/* pontszám */
-.playerScore {
-  font-size: 16px;
-  font-weight: bold;
-  color: #ddd;
-}
-
-/* checkout kész */
-.playerScore.checkout {
-  color: #ffd966;
-}
-
-/* danger */
-.playerScore.danger {
-  color: #ff6666;
+  font-size: 1.4em;
 }
 
 /* finished játékos  */
 .playerName.finished {
   opacity: 0.4;
-  filter: grayscale(1);
 }
 /* ===== RULES PANEL ===== */
 
@@ -656,3 +633,28 @@ div#playerNames {
   color: #ff5555;
 }
 
+/* ===== érme bullshit ===== */
+
+/* Név */
+.playerNameLabel {
+  font-size: 1.35em;  
+  font-weight: 700;
+}
+
+/* Pontszám */
+.playerScore {
+  min-width: 64px;
+  font-size: 1.4em;
+}
+
+/* Érme */
+.playerMedal {
+  filter: none !important;
+  opacity: 1 !important;
+  font-size: 3em;     
+}
+
+.playerName.finished .playerNameLabel,
+.playerName.finished .playerScore {
+  filter: grayscale(100%);
+}

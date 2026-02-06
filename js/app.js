@@ -8,6 +8,7 @@ let currentPlayerIndex = 0;
 let checkoutMode = "single";
 let heatmap = [];
 let throwHistory = [];
+let finishCounter = 0;
 
 
 const numbers = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
@@ -19,6 +20,7 @@ class Player {
     this.lastScore = 501;  
     this.throws = [];
     this.stats = {};
+    this.finishOrder = null; 
     this.finished = false; //alepértelmezett állapot player
     this.roundStartScore = this.score; // kör eleji pontszám
   }
@@ -151,19 +153,6 @@ function nextPlayer() {
   updateCheckoutPanel();
   updateUI();
 }
-
-
-function nextActivePlayer() {
-  let tries = 0;
-  do {
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    tries++;
-  } while (players[currentPlayerIndex].score === 0 && tries < players.length);
-
-  updateUI();
-  updateCheckoutPanel();
-}
-
 
 //tábla rajzolása
 function drawBoard() {
@@ -445,16 +434,15 @@ function addThrow(label, score, x, y) {
     drawHeatmapBlur();
     updateUI();
     renderRounds();
-
-    // Következő játékos, ha vége a körnek (3 dobás)
-    if (player.throws.length % 3 === 0) {
-        nextPlayer();
-    }
+  
 
     // ==========================
     // Játékos kiszállt
-    if (player.score === 0) {
-        player.finished = true;
+      if (player.score === 0) {
+          player.finished = true;
+
+          finishCounter++;
+          player.finishOrder = finishCounter;
 
         if (players.length === 1) {
             alert(player.name + " nyert!");
@@ -464,11 +452,11 @@ function addThrow(label, score, x, y) {
         const continueGame = confirm(`${player.name} kiszállt.\nSzeretnétek folytatni a játékot?`);
         if (continueGame) {
             alert(player.name + " kiszállt, a játék folytatódik!");
-            nextPlayer();
+            nextActivePlayer()
 
             if (players.every(p => p.finished)) {
                 alert("Minden játékos kiszállt! Játék vége.");
-                resetGame();
+                //resetGame();
             }
             return;
         }
@@ -477,6 +465,28 @@ function addThrow(label, score, x, y) {
         if (startNew) resetGame();
         return;
     }
+
+     // Következő játékos, ha vége a körnek (3 dobás)
+    if (player.throws.length % 3 === 0) {
+        nextActivePlayer();
+    }
+
+}
+
+function nextActivePlayer() {
+  let tries = 0;
+
+  do {
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    tries++;
+  } while (players[currentPlayerIndex].finished && tries < players.length);
+
+  heatmap.length = 0;   // 🔥 biztos nullázás
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawBoard();
+  updateUI();
+  updateCheckoutPanel();
 }
 
 
@@ -647,6 +657,11 @@ function resetGame() {
     updateUI();
     updateCheckoutPanel();
     throwHistory = [];
+    finishCounter = 0;
+
+    players.forEach(p => {
+        p.finishOrder = null;
+    });
 }
 
 const statsModal = document.getElementById("statsModal");
@@ -779,30 +794,37 @@ function renderPlayersHeader() {
     if (i === currentPlayerIndex) wrapper.classList.add("active");
     if (p.finished) wrapper.classList.add("finished");
 
-    // név
+    // NÉV
     const name = document.createElement("span");
+    name.className = "playerNameLabel";
     name.textContent = p.name;
 
-    // pontszám
+    // PONTSZÁM
     const score = document.createElement("span");
     score.className = "playerScore";
     score.textContent = p.score;
+
+    // ÉRME
+    let medal = null;
+    if (p.finishOrder && p.finishOrder <= 3) {
+      medal = document.createElement("span");
+      medal.className = "playerMedal";
+
+      if (p.finishOrder === 1) medal.textContent = "🥇";
+      if (p.finishOrder === 2) medal.textContent = "🥈";
+      if (p.finishOrder === 3) medal.textContent = "🥉";
+    }
+
+    // HOZZÁADÁS SORRENDBEN
+    wrapper.appendChild(name);
+    wrapper.appendChild(score);
+    if (medal) wrapper.appendChild(medal);
+
 
     // állapot színezés
     if (p.score <= 170) score.classList.add("danger");
     else if (isCheckoutReady(p)) score.classList.add("checkout");
 
-    // pontváltozás nyíl
-    if (p.lastScore !== undefined && p.lastScore !== p.score) {
-      const diff = p.score - p.lastScore;
-      const arrow = document.createElement("span");
-      arrow.className = "scoreChange";
-
-      score.appendChild(arrow);
-    }
-
-    wrapper.appendChild(name);
-    wrapper.appendChild(score);
     list.appendChild(wrapper);
   });
 
@@ -894,4 +916,117 @@ window.addEventListener("click", (e) => {
   if (e.target === rulesModal) {
     rulesModal.style.display = "none";
   }
+});
+
+// statisztika és grafikon be-letöltése
+
+const statthrowsdlBtn = document.getElementById("statthrowsdl");
+
+statthrowsdlBtn.addEventListener("click", () => {
+  if (!players || players.length === 0) {
+    alert("Nincsenek dobások a mentéshez!");
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+
+  // 1️⃣ Sheet: Dobások
+  const throwData = [];
+  players.forEach(player => {
+    player.getRounds().forEach((round, roundIndex) => {
+      round.forEach((t, throwIndex) => {
+        throwData.push({
+          "Játékos": player.name,
+          "Kör": roundIndex + 1,
+          "Dobás": throwIndex + 1,
+          "Label": t.label,
+          "Pont": t.score
+        });
+      });
+    });
+  });
+  const wsThrows = XLSX.utils.json_to_sheet(throwData);
+  XLSX.utils.book_append_sheet(wb, wsThrows, "Dobások");
+
+  // 2️⃣ Sheet: Statisztika
+  const statsData = players.map(p => {
+    const stats = p.getThrowStats();
+    return {
+      Játékos: p.name,
+      Átlag: p.getAverage(),
+      Duplák: p.getDoubleCount(),
+      Triplák: p.getTripleCount(),
+      SB: stats["SB"] || 0,
+      DB: stats["DB"] || 0,
+      ...Object.fromEntries(
+        Array.from({length:20},(_,i)=>i+1)
+          .flatMap(n => [`S${n}`, `D${n}`, `T${n}`].map(l => [l, stats[l] || 0]))
+      )
+    };
+  });
+  const wsStats = XLSX.utils.json_to_sheet(statsData);
+  XLSX.utils.book_append_sheet(wb, wsStats, "Statisztika");
+
+  // 3️⃣ Mentés
+  const now = new Date();
+
+  //yyyy-MM-dd_HH-mm
+  const dateStr = now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0") + "_" +
+    String(now.getHours()).padStart(2, "0") + "-" +
+    String(now.getMinutes()).padStart(2, "0");
+
+  XLSX.writeFile(wb, `darts_game_${dateStr}.xlsx`);
+
+});
+
+const statthrowsulBtn = document.getElementById("statthrowsul");
+
+statthrowsulBtn.addEventListener("click", () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".xlsx,.xls";
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = evt => {
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, { type: "array" });
+
+      // Dobások sheet
+      const ws = wb.Sheets["Dobások"];
+      if(!ws) { alert("Dobások sheet nem található!"); return; }
+      const json = XLSX.utils.sheet_to_json(ws);
+
+      // Játékosok inicializálása
+      const playerNames = [...new Set(json.map(r => r["Játékos"]))];
+      players = playerNames.map(name => new Player(name));
+
+      // Pontszámok nullázása és dobások betöltése
+      players.forEach(p => {
+        p.score = startingScore;
+        p.throws = [];
+        p.stats = {};
+        p.finished = false;
+      });
+
+      json.forEach(r => {
+        const player = players.find(p => p.name === r["Játékos"]);
+        player.addThrow(r["Label"], r["Pont"]);
+      });
+
+      currentPlayerIndex = 0;
+      heatmap = [];
+      drawBoard();
+      drawHeatmapBlur();
+      updateUI();
+      renderRounds();
+      updateCheckoutPanel();
+
+      alert("Dobások betöltve!");
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  input.click();
 });
