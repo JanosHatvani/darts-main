@@ -101,6 +101,7 @@ body {
 .tablePanel {
   width: 420px;
   min-width: 420px;
+  margin-top: 55px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -332,11 +333,10 @@ canvas {
   background: #1e1e2f;
 }
 
-
 #checkoutPanel {
   position: absolute;
   left: 135px;
-  top: 420px;
+  top: 480px;
   width: auto;
   padding: 10px;
   background: #111;

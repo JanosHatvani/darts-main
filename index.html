@@ -8,12 +8,13 @@
 </head>
 <body>
 
-<!-- OLDALSÓ MENÜ -->
+<!-- side menu -->
 <div id="sidebar">
   <h2>Darts</h2>
   <button id="showStats">Statisztikák</button>
   <button id="backToStart">Kezdőfelület</button>
   <button id="rulesofdarts">Szabályok</button>
+  <button id="statthrowsul" class="secondaryBtn">Statisztika/játék betöltése</button>
 </div>
 
 <!-- FŐ PANEL -->
@@ -71,8 +72,8 @@
           <button id="undoBtn" class="secondaryBtn">Visszavonás</button>
           <!--  <button id="redoBtn" class="secondaryBtn">Visszaállítás</button> -->
           <button id="newGameBtn" class="secondaryBtn">Új játék</button>
-          <button id="statthrowsdl" class="secondaryBtn">Stat/dobások letöltése</button>
-          <button id="statthrowsul" class="secondaryBtn">Stat/dobások betöltése</button>
+          <button id="statthrowsdl" class="secondaryBtn">Statisztika/játék letöltése</button>
+          <button id="statthrowsul" class="secondaryBtn">Statisztika/játék betöltése</button>
         </div>
 
         <div id="playersHeader"></div>
@@ -143,10 +144,9 @@
       </div>
     </div>
 
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="lib/charts.js"></script>
 <script src="js/app.js"></script>
 <script src="js/stat.js"></script>
 <script src="lib/xlsx.full.min.js"></script>

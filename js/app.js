@@ -1016,7 +1016,10 @@ statthrowsulBtn.addEventListener("click", () => {
       updateUI();
       renderRounds();
       updateCheckoutPanel();
-
+      if(gamePanel.style.display === "none"){
+        startPanel.style.display = "none";
+        gamePanel.style.display = "block";
+      }
       alert("Dobások betöltve!");
     };
     reader.readAsArrayBuffer(file);

@@ -89,7 +89,9 @@ function renderStats(players) {
       label: player.name,
       data: labels.map(l => stats[l] || 0),
       backgroundColor: randomColor(),
-      barPercentage: 2,
+      barPercentage: 1,
+      padding : 0.5,
+      borderradius: 4,
       categoryPercentage: 1
     };
   });
@@ -124,11 +126,19 @@ function renderStats(players) {
           color: "white",
           font: { size: 22 }
         },
-        tooltip: {
-          enabled: true,
-          bodyFont: { size: 16 },
-          titleFont: { size: 16 }
+    tooltip: {
+      enabled: true,
+      filter: (tooltipItem) => {
+        return tooltipItem.raw > 0;
+      },
+      callbacks: {
+        label: (ctx) => {
+          return `${ctx.dataset.label}: ${ctx.raw}`;
         }
+      },
+      bodyFont: { size: 14 },
+      titleFont: { size: 14 }
+    }
       },
       scales: {
         x: {
