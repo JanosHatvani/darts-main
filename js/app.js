@@ -374,24 +374,39 @@ function addThrow(label, score, x, y) {
 
     // ==========================
     // Bust / túllépés
-    if (player.score < 0) {
-        bust = true;
-        player.score = player.roundStartScore;
+// ==========================
+// Bust / túllépés vagy 1 pont maradt dupla kiszállónál
+if (
+    player.score < 0 ||
+    (checkoutMode === "double" && player.score === 1)
+) {
+    bust = true;
+    player.score = player.roundStartScore;
 
-        const throwsToRemove = player.throws.length % 3 === 0 ? 0 : player.throws.length % 3;
-        for (let i = 0; i < throwsToRemove; i++) {
-            player.throws.pop();
-            heatmap.pop();
-        }
+    const throwsToRemove =
+        player.throws.length % 3 === 0
+            ? 0
+            : player.throws.length % 3;
 
-        drawBoard();
-        updateUI();
-        alert(player.name + " túllépte a kör eleji pontját! Dobások érvénytelenek.");
-
-        nextActivePlayer();
-        updateCheckoutPanel();
-        return;
+    for (let i = 0; i < throwsToRemove; i++) {
+        player.throws.pop();
+        heatmap.pop();
     }
+
+    drawBoard();
+    updateUI();
+
+    alert(
+        player.name +
+        (player.score < 0
+            ? " túllépte a kör eleji pontját!"
+            : " 1 pontra maradt! Dupla kiszálló nem lehetséges!")
+    );
+
+    nextActivePlayer();
+    updateCheckoutPanel();
+    return;
+  }
 
     // ==========================
     // Dupla kiszálló ellenőrzés
@@ -513,13 +528,39 @@ generatePlayerInputs();
 // változás esetén frissítés
 playerCountInput.addEventListener("change", generatePlayerInputs);
 
-//Menu
-document.getElementById("backToStart").addEventListener("click",()=>{
-  startPanel.style.display="block";
-  gamePanel.style.display="none";
-  heatmap=[];
-  players=[];
-  throwsDiv.innerHTML="";
+document.getElementById("backToStart").addEventListener("click", () => {
+
+  // Panelek váltása
+  startPanel.style.display = "block";
+  gamePanel.style.display = "none";
+
+  // Heatmap teljes nullázás
+  heatmap = [];
+  throwHistory = [];
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Játékos adatok nullázása (érmek is)
+  players.forEach(p => {
+    p.score = startingScore;
+    p.throws = [];
+    p.stats = {};
+    p.finished = false;
+    p.finishOrder = null;
+    p.roundStartScore = startingScore;
+  });
+
+  finishCounter = 0;
+  currentPlayerIndex = 0;
+
+  // Round table törlése
+  document.getElementById("roundsContainer").innerHTML = "";
+
+  // Header (érmek eltűnnek)
+  renderPlayersHeader();
+
+  // UI frissítés
+  updateUI();
 });
 
 document.getElementById("undoBtn").addEventListener("click", () => {
@@ -593,7 +634,20 @@ function renderRounds(){
 
     // Fejléc
     const thead = document.createElement("tr");
-    thead.innerHTML = players.map(p => `<th>${p.name}</th>`).join("");
+
+    thead.innerHTML = players.map(p => {
+
+      const round = p.getRounds()[r];
+
+      let roundTotal = 0;
+      if (round) {
+        roundTotal = round.reduce((sum, t) => sum + t.score, 0);
+      }
+
+      return `<th>${p.name} ${round ? `(${roundTotal})` : ""}</th>`;
+
+    }).join("");
+
     table.appendChild(thead);
 
     // 3 dobás sor
@@ -923,7 +977,7 @@ statthrowsdlBtn.addEventListener("click", () => {
 
   const wb = XLSX.utils.book_new();
 
-  // 1️⃣ Sheet: Dobások
+  // Sheet: Dobások
   const throwData = [];
   players.forEach(player => {
     player.getRounds().forEach((round, roundIndex) => {
@@ -941,7 +995,7 @@ statthrowsdlBtn.addEventListener("click", () => {
   const wsThrows = XLSX.utils.json_to_sheet(throwData);
   XLSX.utils.book_append_sheet(wb, wsThrows, "Dobások");
 
-  // 2️⃣ Sheet: Statisztika
+  //Sheet: Statisztika
   const statsData = players.map(p => {
     const stats = p.getThrowStats();
     return {
@@ -960,7 +1014,7 @@ statthrowsdlBtn.addEventListener("click", () => {
   const wsStats = XLSX.utils.json_to_sheet(statsData);
   XLSX.utils.book_append_sheet(wb, wsStats, "Statisztika");
 
-  // 3️⃣ Mentés
+  //Mentés
   const now = new Date();
 
   //yyyy-MM-dd_HH-mm
